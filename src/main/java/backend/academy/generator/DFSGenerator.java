@@ -12,6 +12,7 @@ import java.util.Stack;
 public class DFSGenerator implements Generator {
 
     private static final Random RANDOM = new Random();
+    private static final int STEP_SIZE = 2;  // Константа для размера шага
     Set<Coordinate> visited = new HashSet<>(); // Множество для отслеживания посещённых клеток
 
     @Override
@@ -38,7 +39,7 @@ public class DFSGenerator implements Generator {
         int row = current.row();
         int col = current.col();
         // Перемешиваем порядок направлений для случайного выбора
-        int[][] directions = {{-2, 0}, {2, 0}, {0, -2}, {0, 2}};
+        int[][] directions = {{-STEP_SIZE, 0}, {STEP_SIZE, 0}, {0, -STEP_SIZE}, {0, STEP_SIZE}};
         shuffleArray(directions);
 
         // Для каждого направления проверяем соседа
