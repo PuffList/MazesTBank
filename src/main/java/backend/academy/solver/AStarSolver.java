@@ -1,10 +1,8 @@
 package backend.academy.solver;
 
-import backend.academy.maze_primitives.Cell;
 import backend.academy.maze_primitives.Coordinate;
 import backend.academy.maze_primitives.Maze;
 import backend.academy.maze_primitives.Solver;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -29,11 +27,11 @@ public class AStarSolver implements Solver {
 
             // Если достигли конечной точки, восстанавливаем путь
             if (current.equals(end)) {
-                return reconstructPath(cameFrom, end);
+                return SolveUtils.reconstructPath(cameFrom, end);
             }
 
             // Проверяем соседей
-            for (Coordinate neighbor : getNeighbors(maze, current)) {
+            for (Coordinate neighbor : SolveUtils.getNeighbors(maze, current)) {
                 int tentativeGScore = gScore.get(current) + 1;  // Расстояние от старта до соседа исследуемой клетки
 
                 // Проверка, является ли новый путь более коротким
@@ -52,45 +50,6 @@ public class AStarSolver implements Solver {
     // Эвристика Манхэттена(hScope) - кротчайшее расстояние от точки A до B
     private int heuristic(Coordinate a, Coordinate b) {
         return Math.abs(a.row() - b.row()) + Math.abs(a.col() - b.col());
-    }
-
-    // Восстанавливаем путь по словарю cameFrom
-    private List<Coordinate> reconstructPath(Map<Coordinate, Coordinate> cameFrom, Coordinate end) {
-        List<Coordinate> path = new ArrayList<>();
-        Coordinate current = end;
-
-        while (current != null) {
-            path.add(current);
-            current = cameFrom.get(current);
-        }
-
-        Collections.reverse(path); // Реверсируем список, чтобы путь шёл от начала к концу
-        return path;
-    }
-
-    // Возвращаем список соседей для текущей клетки
-    private List<Coordinate> getNeighbors(Maze maze, Coordinate current) {
-        List<Coordinate> neighbors = new ArrayList<>();
-        int row = current.row();
-        int col = current.col();
-
-        if (row > 0 && maze.getCell(row - 1, col).type() == Cell.Type.PASSAGE) {
-            neighbors.add(new Coordinate(row - 1, col));
-        }
-
-        if (row < maze.height() - 1 && maze.getCell(row + 1, col).type() == Cell.Type.PASSAGE) {
-            neighbors.add(new Coordinate(row + 1, col));
-        }
-
-        if (col > 0 && maze.getCell(row, col - 1).type() == Cell.Type.PASSAGE) {
-            neighbors.add(new Coordinate(row, col - 1));
-        }
-
-        if (col < maze.width() - 1 && maze.getCell(row, col + 1).type() == Cell.Type.PASSAGE) {
-            neighbors.add(new Coordinate(row, col + 1));
-        }
-
-        return neighbors;
     }
 
     // Класс для узла с координатами и оценкой fScore
