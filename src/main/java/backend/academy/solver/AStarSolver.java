@@ -14,19 +14,6 @@ import java.util.PriorityQueue;
 
 public class AStarSolver implements Solver {
 
-    // Класс для узла с координатами и оценкой fScore
-    private static class Node {
-        Coordinate coordinate;
-        int gScore;  // Стоимость пути до этого узла(конкретной клетки)
-        int fScore;  // Общая оценка (f = g + h)
-
-        Node(Coordinate coordinate, int gScore, int fScore) {
-            this.coordinate = coordinate;
-            this.gScore = gScore;
-            this.fScore = fScore;
-        }
-    }
-
     @Override
     public List<Coordinate> solve(Maze maze, Coordinate start, Coordinate end) {
         PriorityQueue<Node> pQueue = new PriorityQueue<>(Comparator.comparingInt(node -> node.fScore));
@@ -103,5 +90,18 @@ public class AStarSolver implements Solver {
         }
 
         return neighbors;
+    }
+
+    // Класс для узла с координатами и оценкой fScore
+    private static class Node {
+        Coordinate coordinate;
+        int gScore;  // Стоимость пути до этого узла(конкретной клетки)
+        int fScore;  // Общая оценка (f = g + h)
+
+        Node(Coordinate coordinate, int gScore, int fScore) {
+            this.coordinate = coordinate;
+            this.gScore = gScore;
+            this.fScore = fScore;
+        }
     }
 }

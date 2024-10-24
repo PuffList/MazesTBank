@@ -11,7 +11,7 @@ import java.util.Stack;
 
 public class DFSGenerator implements Generator {
 
-    private static final Random random = new Random();
+    private static final Random RANDOM = new Random();
     Set<Coordinate> visited = new HashSet<>(); // Множество для отслеживания посещённых клеток
 
     @Override
@@ -20,8 +20,8 @@ public class DFSGenerator implements Generator {
         Stack<Coordinate> stack = new Stack<>();
         int realHeight = height * 2 - 1;
         int realWidth = width * 2 - 1;
-        int startRow = (random.nextInt(realHeight) / 2) * 2; // Выбор случайной стартовой клетки (только четные клетки могут быть проходами)
-        int startCol = (random.nextInt(realWidth) / 2) * 2;
+        int startRow = (RANDOM.nextInt(realHeight) / 2) * 2; // Выбор случайной стартовой клетки (только четные клетки могут быть проходами)
+        int startCol = (RANDOM.nextInt(realWidth) / 2) * 2;
         stack.add(new Coordinate(startRow, startCol));
         visited.add(new Coordinate(startRow, startCol));
 
@@ -64,7 +64,7 @@ public class DFSGenerator implements Generator {
     // Метод для перемешивания массива направлений
     private void shuffleArray(int[][] array) {
         for (int i = array.length - 1; i > 0; i--) {
-            int index = random.nextInt(i + 1);
+            int index = RANDOM.nextInt(i + 1);
             int[] temp = array[index];
             array[index] = array[i];
             array[i] = temp;

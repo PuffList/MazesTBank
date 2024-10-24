@@ -12,7 +12,7 @@ import java.util.Set;
 
 public class PrimGenerator implements Generator {
 
-    private static final Random random = new Random();
+    private static final Random RANDOM = new Random();
 
     @Override
     public Maze generate(int height, int width) {
@@ -21,13 +21,13 @@ public class PrimGenerator implements Generator {
         Set<Coordinate> inMaze = new HashSet<>();  // Множество для отслеживания клеток, которые уже в лабиринте
         int realHeight = height * 2 - 1;
         int realWidth = width * 2 - 1;
-        int startRow = (random.nextInt(realHeight) / 2) * 2; // Выбор случайной стартовой клетки (только четные клетки могут быть проходами)
-        int startCol = (random.nextInt(realWidth) / 2) * 2;
+        int startRow = (RANDOM.nextInt(realHeight) / 2) * 2; // Выбор случайной стартовой клетки (только четные клетки могут быть проходами)
+        int startCol = (RANDOM.nextInt(realWidth) / 2) * 2;
         inMaze.add(new Coordinate(startRow, startCol));
         addWallsAround(maze, startRow, startCol, walls); // Определяем координаты стен вокруг стартовой клетки
 
         while (!walls.isEmpty()) {
-            Coordinate wall = walls.remove(random.nextInt(walls.size()));
+            Coordinate wall = walls.remove(RANDOM.nextInt(walls.size()));
             List<Coordinate> neighbors = getNeighbors(maze, wall); // Получаем соседние клетки по обе стороны от стены
             // Устанавливаем флаги
             Coordinate insideMaze = null;
