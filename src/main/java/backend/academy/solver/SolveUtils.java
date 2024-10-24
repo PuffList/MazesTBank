@@ -3,11 +3,13 @@ package backend.academy.solver;
 import backend.academy.maze_primitives.Cell;
 import backend.academy.maze_primitives.Coordinate;
 import backend.academy.maze_primitives.Maze;
+import lombok.experimental.UtilityClass;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+@UtilityClass
 public class SolveUtils {
 
     public static List<Coordinate> reconstructPath(Map<Coordinate, Coordinate> cameFrom, Coordinate end) {
