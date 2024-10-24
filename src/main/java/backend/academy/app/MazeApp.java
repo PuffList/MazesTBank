@@ -18,6 +18,7 @@ import java.util.Scanner;
 
 public class MazeApp {
 
+    private static final String INPUT_ERROR_MESSAGE = "Ошибка ввода, пожалуйста, введите число.";
     private static final PrintStream OUT = System.out;
     private Generator generator;
     private Solver solver;
@@ -62,7 +63,7 @@ public class MazeApp {
                         OUT.println("Некорректный выбор, попробуйте снова.");
                 }
             } catch (InputMismatchException e) {
-                OUT.println("Ошибка ввода, пожалуйста, введите число.");
+                OUT.println(INPUT_ERROR_MESSAGE);
                 scanner.next(); // Очищаем некорректный ввод
             }
         }
@@ -110,7 +111,8 @@ public class MazeApp {
                 if (isValidCoordinate(start) && isValidCoordinate(end)) {
                     validCoordinates = true;
                 } else {
-                    OUT.println("Одна или обе из введённых точек являются стенами или выходят за пределы лабиринта. Попробуйте снова.");
+                    OUT.println("Одна или обе из введённых точек являются стенами или выходят за пределы лабиринта.");
+                    OUT.println("Попробуйте снова.");
                 }
             } catch (InputMismatchException e) {
                 OUT.println("Ошибка ввода, пожалуйста, введите числа в пределах лабиринта.");
@@ -123,12 +125,16 @@ public class MazeApp {
     private boolean isValidCoordinate(Coordinate coord) {
         int row = coord.row();
         int col = coord.col();
-        return row >= 0 && row < maze.height() && col >= 0 && col < maze.width() && maze.getCell(row, col).type() == Cell.Type.PASSAGE;
+        return row >= 0 && row < maze.height()
+            && col >= 0 && col < maze.width()
+            && maze.getCell(row, col).type() == Cell.Type.PASSAGE;
     }
 
     // Метод для выбора алгоритма поиска пути
     private void choosePathFindingAlgorithm(Scanner scanner) {
-        while (true) {
+        boolean flag = true;
+
+        while (flag) {
             OUT.println("Выберите алгоритм для поиска пути:");
             OUT.println("1. Поиск в ширину (BFS)");
             OUT.println("2. Поиск A-Star");
@@ -139,15 +145,17 @@ public class MazeApp {
                 switch (searchChoice) {
                     case 1:
                         this.solver = new BFSSolver();
-                        return;
+                        flag = false;
+                        break;
                     case 2:
                         this.solver = new AStarSolver();
-                        return;
+                        flag = false;
+                        break;
                     default:
                         OUT.println("Некорректный ввод, попробуйте снова.");
                 }
             } catch (InputMismatchException e) {
-                OUT.println("Ошибка ввода, пожалуйста, введите число.");
+                OUT.println(INPUT_ERROR_MESSAGE);
                 scanner.next();
             }
         }

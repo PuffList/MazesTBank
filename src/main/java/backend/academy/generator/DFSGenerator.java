@@ -20,7 +20,8 @@ public class DFSGenerator implements Generator {
         Stack<Coordinate> stack = new Stack<>();
         int realHeight = height * 2 - 1;
         int realWidth = width * 2 - 1;
-        int startRow = (RANDOM.nextInt(realHeight) / 2) * 2; // Выбор случайной стартовой клетки (только четные клетки могут быть проходами)
+        // Выбор случайной стартовой клетки (только четные клетки могут быть проходами)
+        int startRow = (RANDOM.nextInt(realHeight) / 2) * 2;
         int startCol = (RANDOM.nextInt(realWidth) / 2) * 2;
         stack.add(new Coordinate(startRow, startCol));
         visited.add(new Coordinate(startRow, startCol));
@@ -36,7 +37,8 @@ public class DFSGenerator implements Generator {
     private void addNeighborsTostack(Maze maze, Coordinate current, Stack<Coordinate> stack) {
         int row = current.row();
         int col = current.col();
-        int[][] directions = {{-2, 0}, {2, 0}, {0, -2}, {0, 2}}; // Перемешиваем порядок направлений для случайного выбора
+        // Перемешиваем порядок направлений для случайного выбора
+        int[][] directions = {{-2, 0}, {2, 0}, {0, -2}, {0, 2}};
         shuffleArray(directions);
 
         // Для каждого направления проверяем соседа

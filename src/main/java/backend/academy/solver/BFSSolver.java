@@ -21,7 +21,8 @@ public class BFSSolver implements Solver {
 
         Queue<Coordinate> queue = new LinkedList<>();
         queue.add(start);
-        Map<Coordinate, Coordinate> cameFrom = new HashMap<>(); // Словарь для отслеживания, откуда мы пришли в каждую клетку
+        // Словарь для отслеживания, откуда мы пришли в каждую клетку
+        Map<Coordinate, Coordinate> cameFrom = new HashMap<>();
         cameFrom.put(start, null);  // Стартовая точка
         Set<Coordinate> visited = new HashSet<>(); // Множество для хранения посещённых клеток
         visited.add(start);

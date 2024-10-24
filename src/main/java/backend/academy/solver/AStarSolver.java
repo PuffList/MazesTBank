@@ -18,7 +18,8 @@ public class AStarSolver implements Solver {
     public List<Coordinate> solve(Maze maze, Coordinate start, Coordinate end) {
         PriorityQueue<Node> pQueue = new PriorityQueue<>(Comparator.comparingInt(node -> node.fScore));
         pQueue.add(new Node(start, 0, heuristic(start, end)));
-        Map<Coordinate, Coordinate> cameFrom = new HashMap<>(); // Словарь для отслеживания, откуда мы пришли в каждую клетку
+        // Словарь для отслеживания, откуда мы пришли в каждую клетку
+        Map<Coordinate, Coordinate> cameFrom = new HashMap<>();
         Map<Coordinate, Integer> gScore = new HashMap<>(); // Хранения фактической стоимости пути (g)
         gScore.put(start, 0);
 

@@ -21,7 +21,8 @@ public class PrimGenerator implements Generator {
         Set<Coordinate> inMaze = new HashSet<>();  // Множество для отслеживания клеток, которые уже в лабиринте
         int realHeight = height * 2 - 1;
         int realWidth = width * 2 - 1;
-        int startRow = (RANDOM.nextInt(realHeight) / 2) * 2; // Выбор случайной стартовой клетки (только четные клетки могут быть проходами)
+        // Выбор случайной стартовой клетки (только четные клетки могут быть проходами)
+        int startRow = (RANDOM.nextInt(realHeight) / 2) * 2;
         int startCol = (RANDOM.nextInt(realWidth) / 2) * 2;
         inMaze.add(new Coordinate(startRow, startCol));
         addWallsAround(maze, startRow, startCol, walls); // Определяем координаты стен вокруг стартовой клетки
