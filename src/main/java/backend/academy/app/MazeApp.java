@@ -16,6 +16,8 @@ import java.util.NoSuchElementException;
  */
 public class MazeApp {
 
+    private static final String ERROR_INPUT = "Ошибка ввода. Попробуйте снова.";
+    private static final String INVALID_CHOICE = "Некорректный выбор. Введите 1 или 2.";
     private final CommandSource commandSource;
     private final Render renderer;
     private final MazeGame game;
@@ -38,79 +40,86 @@ public class MazeApp {
      */
     public void start() {
         commandSource.showMessageOrMaze("Добро пожаловать в MazeApp!");
-        int generationChoice;
+        chooseGenerationAlgorithm();
+        enterMazeDimensions();
+        commandSource.showMessageOrMaze(renderer.render(game.maze()));
+        enterStartAndEndPoints();
+        chooseSolverAlgorithm();
+        findAndDisplayPath();
+    }
 
+    private void chooseGenerationAlgorithm() {
         while (true) {
             try {
-                generationChoice = commandSource.getIntInput("Выберите алгоритм генерации (1 - Прима, 2 - DFS):");
+                int generationChoice = commandSource.getIntInput("Выберите алгоритм генерации (1 - Прима, 2 - DFS):");
                 if (generationChoice == 1 || generationChoice == 2) {
-                    break;
+                    game.generator(generationChoice == 1 ? new PrimGenerator() : new DFSGenerator());
+                    return;
                 } else {
-                    commandSource.showMessageOrMaze("Некорректный выбор. Введите 1 или 2.");
+                    commandSource.showMessageOrMaze(INVALID_CHOICE);
                 }
             } catch (Exception e) {
-                throw new NoSuchElementException("Ошибка ввода. Попробуйте снова.");
+                throw new NoSuchElementException(ERROR_INPUT);
             }
         }
+    }
 
-        game.generator(generationChoice == 1 ? new PrimGenerator() : new DFSGenerator());
-        int height, width;
-
+    private void enterMazeDimensions() {
         while (true) {
             try {
-                height = commandSource.getIntInput("Введите высоту лабиринта:");
-                width = commandSource.getIntInput("Введите ширину лабиринта:");
+                int height = commandSource.getIntInput("Введите высоту лабиринта:");
+                int width = commandSource.getIntInput("Введите ширину лабиринта:");
                 if (height > 1 && width > 1) {
-                    break;
+                    game.generateMaze(height, width);
+                    return;
                 } else {
                     commandSource.showMessageOrMaze("Размеры лабиринта должны быть больше 1.");
                 }
             } catch (Exception e) {
-                commandSource.showMessageOrMaze("Ошибка ввода. Попробуйте снова.");
+                commandSource.showMessageOrMaze(ERROR_INPUT);
             }
         }
+    }
 
-        game.generateMaze(height, width);
-        commandSource.showMessageOrMaze(renderer.render(game.maze()));
-
-        Coordinate start = null, end = null;
+    private void enterStartAndEndPoints() {
         while (true) {
             try {
                 int startRow = commandSource.getIntInput("Введите начальную строку:");
                 int startCol = commandSource.getIntInput("Введите начальный столбец:");
                 int endRow = commandSource.getIntInput("Введите конечную строку:");
                 int endCol = commandSource.getIntInput("Введите конечный столбец:");
-                start = new Coordinate(startRow, startCol);
-                end = new Coordinate(endRow, endCol);
+                Coordinate start = new Coordinate(startRow, startCol);
+                Coordinate end = new Coordinate(endRow, endCol);
                 if (isValidCoordinate(start) && isValidCoordinate(end)) {
-                    break;
+                    game.setStartAndEnd(start, end);
+                    return;
                 } else {
                     commandSource.showMessageOrMaze("Одна или обе из введённых точек некорректны. Попробуйте снова.");
                 }
             } catch (Exception e) {
-                commandSource.showMessageOrMaze("Ошибка ввода. Попробуйте снова.");
+                commandSource.showMessageOrMaze(ERROR_INPUT);
             }
         }
+    }
 
-        game.setStartAndEnd(start, end);
-        int solverChoice;
-
+    private void chooseSolverAlgorithm() {
         while (true) {
             try {
-                solverChoice = commandSource.getIntInput("Выберите алгоритм поиска пути (1 - BFS, 2 - A*):");
+                int solverChoice = commandSource.getIntInput("Выберите алгоритм поиска пути (1 - BFS, 2 - A*):");
                 if (solverChoice == 1 || solverChoice == 2) {
-                    break;
+                    game.solver(solverChoice == 1 ? new BFSSolver() : new AStarSolver());
+                    return;
                 } else {
-                    commandSource.showMessageOrMaze("Некорректный выбор. Введите 1 или 2.");
+                    commandSource.showMessageOrMaze(INVALID_CHOICE);
                 }
             } catch (Exception e) {
-                commandSource.showMessageOrMaze("Ошибка ввода. Попробуйте снова.");
+                commandSource.showMessageOrMaze(ERROR_INPUT);
             }
         }
+    }
 
-        game.solver(solverChoice == 1 ? new BFSSolver() : new AStarSolver());
+    private void findAndDisplayPath() {
         List<Coordinate> path = game.findPath();
-
         if (path.isEmpty()) {
             commandSource.showMessageOrMaze("Путь не найден.");
         } else {
@@ -118,7 +127,6 @@ public class MazeApp {
             commandSource.showMessageOrMaze(renderer.render(game.maze(), path));
         }
     }
-
     private boolean isValidCoordinate(Coordinate coord) {
         int row = coord.row();
         int col = coord.col();
