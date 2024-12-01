@@ -120,6 +120,7 @@ public class MazeApp {
 
     private void findAndDisplayPath() {
         List<Coordinate> path = game.findPath();
+
         if (path.isEmpty()) {
             commandSource.showMessageOrMaze("Путь не найден.");
         } else {
@@ -127,6 +128,7 @@ public class MazeApp {
             commandSource.showMessageOrMaze(renderer.render(game.maze(), path));
         }
     }
+
     private boolean isValidCoordinate(Coordinate coord) {
         int row = coord.row();
         int col = coord.col();
@@ -134,5 +136,4 @@ public class MazeApp {
             && col >= 0 && col < game.maze().width()
             && game.maze().getCell(row, col).type() == Cell.Type.PASSAGE;
     }
-
 }
