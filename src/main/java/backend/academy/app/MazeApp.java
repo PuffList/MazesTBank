@@ -4,172 +4,127 @@ import backend.academy.generator.DFSGenerator;
 import backend.academy.generator.PrimGenerator;
 import backend.academy.maze_primitives.Cell;
 import backend.academy.maze_primitives.Coordinate;
-import backend.academy.maze_primitives.Generator;
-import backend.academy.maze_primitives.Maze;
 import backend.academy.maze_primitives.Render;
-import backend.academy.maze_primitives.Solver;
-import backend.academy.render.ConsoleRender;
 import backend.academy.solver.AStarSolver;
 import backend.academy.solver.BFSSolver;
-import java.io.PrintStream;
-import java.util.InputMismatchException;
 import java.util.List;
-import java.util.Scanner;
+import java.util.NoSuchElementException;
 
+/**
+ * Главный класс приложения для работы с лабиринтом.
+ * Отвечает за взаимодействие между пользователем и логикой генерации и поиска пути.
+ */
 public class MazeApp {
 
-    private static final String INPUT_ERROR_MESSAGE = "Ошибка ввода, пожалуйста, введите число.";
-    private static final PrintStream OUT = System.out;
-    private Generator generator;
-    private Solver solver;
-    private Maze maze;
-    private Coordinate start;
-    private Coordinate end;
-    private Render render;
+    private final CommandSource commandSource;
+    private final Render renderer;
+    private final MazeGame game;
 
-    public void startGame() {
-        Scanner scanner = new Scanner(System.in);
-        this.render = new ConsoleRender();
-        chooseMazeGenerationAlgorithm(scanner); // Выбор алгоритма генерации
-        generateMaze(scanner); // Генерация лабиринта
-        inputStartAndEndPoints(scanner); // Ввод начальной и конечной точек
-        choosePathFindingAlgorithm(scanner); // Выбор алгоритма поиска пути
-        findPath(); // Поиск пути
-        scanner.close();
+    /**
+     * Конструктор класса MazeApp.
+     *
+     * @param commandSource источник команд пользователя
+     * @param renderer рендер для вывода лабиринта и пути
+     */
+    public MazeApp(CommandSource commandSource, Render renderer) {
+        this.commandSource = commandSource;
+        this.renderer = renderer;
+        this.game = new MazeGame();
     }
 
-    // Метод для выбора алгоритма генерации лабиринта
-    private void chooseMazeGenerationAlgorithm(Scanner scanner) {
-        boolean flag = true;
+    /**
+     * Основной метод запуска приложения.
+     * Осуществляет взаимодействие с пользователем, генерирует лабиринт, находит путь и отображает результат.
+     */
+    public void start() {
+        commandSource.showMessageOrMaze("Добро пожаловать в MazeApp!");
+        int generationChoice;
 
-        while (flag) {
-            OUT.println("Выберите алгоритм для генерации лабиринта:");
-            OUT.println("1. Алгоритм Прима");
-            OUT.println("2. Алгоритм DFS (поиск в глубину)");
-
-            try {
-                int generationChoice = scanner.nextInt();
-
-                switch (generationChoice) {
-                    case 1:
-                        this.generator = new PrimGenerator();
-                        flag = false;
-                        break;
-                    case 2:
-                        this.generator = new DFSGenerator();
-                        flag = false;
-                        break;
-                    default:
-                        OUT.println("Некорректный выбор, попробуйте снова.");
-                }
-            } catch (InputMismatchException e) {
-                OUT.println(INPUT_ERROR_MESSAGE);
-                scanner.next(); // Очищаем некорректный ввод
-            }
-        }
-    }
-
-    // Метод для генерации лабиринта
-    private void generateMaze(Scanner scanner) {
         while (true) {
-            OUT.println("Введите размеры лабиринта (высота и ширина):");
             try {
-                int height = scanner.nextInt();
-                int width = scanner.nextInt();
+                generationChoice = commandSource.getIntInput("Выберите алгоритм генерации (1 - Прима, 2 - DFS):");
+                if (generationChoice == 1 || generationChoice == 2) {
+                    break;
+                } else {
+                    commandSource.showMessageOrMaze("Некорректный выбор. Введите 1 или 2.");
+                }
+            } catch (Exception e) {
+                throw new NoSuchElementException("Ошибка ввода. Попробуйте снова.");
+            }
+        }
 
+        game.generator(generationChoice == 1 ? new PrimGenerator() : new DFSGenerator());
+        int height, width;
+
+        while (true) {
+            try {
+                height = commandSource.getIntInput("Введите высоту лабиринта:");
+                width = commandSource.getIntInput("Введите ширину лабиринта:");
                 if (height > 1 && width > 1) {
-                    this.maze = this.generator.generate(height, width);
-                    OUT.println("Сгенерированный лабиринт:");
-                    OUT.println(render.render(maze));
-                    return;
+                    break;
                 } else {
-                    OUT.println("Размеры лабиринта должны быть больше одного.");
+                    commandSource.showMessageOrMaze("Размеры лабиринта должны быть больше 1.");
                 }
-            } catch (InputMismatchException e) {
-                OUT.println("Ошибка ввода, введите два целых числа.");
-                scanner.next();
+            } catch (Exception e) {
+                commandSource.showMessageOrMaze("Ошибка ввода. Попробуйте снова.");
             }
         }
-    }
 
-    // Метод для ввода начальной и конечной точек
-    private void inputStartAndEndPoints(Scanner scanner) {
-        boolean validCoordinates = false;
+        game.generateMaze(height, width);
+        commandSource.showMessageOrMaze(renderer.render(game.maze()));
 
-        while (!validCoordinates) {
+        Coordinate start = null, end = null;
+        while (true) {
             try {
-                OUT.println("Введите координаты начальной точки (строка и столбец):");
-                int startRow = scanner.nextInt();
-                int startCol = scanner.nextInt();
-                this.start = new Coordinate(startRow, startCol);
-
-                OUT.println("Введите координаты конечной точки (строка и столбец):");
-                int endRow = scanner.nextInt();
-                int endCol = scanner.nextInt();
-                this.end = new Coordinate(endRow, endCol);
-
+                int startRow = commandSource.getIntInput("Введите начальную строку:");
+                int startCol = commandSource.getIntInput("Введите начальный столбец:");
+                int endRow = commandSource.getIntInput("Введите конечную строку:");
+                int endCol = commandSource.getIntInput("Введите конечный столбец:");
+                start = new Coordinate(startRow, startCol);
+                end = new Coordinate(endRow, endCol);
                 if (isValidCoordinate(start) && isValidCoordinate(end)) {
-                    validCoordinates = true;
+                    break;
                 } else {
-                    OUT.println("Одна или обе из введённых точек являются стенами или выходят за пределы лабиринта.");
-                    OUT.println("Попробуйте снова.");
+                    commandSource.showMessageOrMaze("Одна или обе из введённых точек некорректны. Попробуйте снова.");
                 }
-            } catch (InputMismatchException e) {
-                OUT.println("Ошибка ввода, пожалуйста, введите числа в пределах лабиринта.");
-                scanner.next();
+            } catch (Exception e) {
+                commandSource.showMessageOrMaze("Ошибка ввода. Попробуйте снова.");
             }
+        }
+
+        game.setStartAndEnd(start, end);
+        int solverChoice;
+
+        while (true) {
+            try {
+                solverChoice = commandSource.getIntInput("Выберите алгоритм поиска пути (1 - BFS, 2 - A*):");
+                if (solverChoice == 1 || solverChoice == 2) {
+                    break;
+                } else {
+                    commandSource.showMessageOrMaze("Некорректный выбор. Введите 1 или 2.");
+                }
+            } catch (Exception e) {
+                commandSource.showMessageOrMaze("Ошибка ввода. Попробуйте снова.");
+            }
+        }
+
+        game.solver(solverChoice == 1 ? new BFSSolver() : new AStarSolver());
+        List<Coordinate> path = game.findPath();
+
+        if (path.isEmpty()) {
+            commandSource.showMessageOrMaze("Путь не найден.");
+        } else {
+            commandSource.showMessageOrMaze("Найденный путь:");
+            commandSource.showMessageOrMaze(renderer.render(game.maze(), path));
         }
     }
 
-    // Проверка, что координаты находятся в пределах лабиринта и не являются стенами
     private boolean isValidCoordinate(Coordinate coord) {
         int row = coord.row();
         int col = coord.col();
-        return row >= 0 && row < maze.height()
-            && col >= 0 && col < maze.width()
-            && maze.getCell(row, col).type() == Cell.Type.PASSAGE;
+        return row >= 0 && row < game.maze().height()
+            && col >= 0 && col < game.maze().width()
+            && game.maze().getCell(row, col).type() == Cell.Type.PASSAGE;
     }
 
-    // Метод для выбора алгоритма поиска пути
-    private void choosePathFindingAlgorithm(Scanner scanner) {
-        boolean flag = true;
-
-        while (flag) {
-            OUT.println("Выберите алгоритм для поиска пути:");
-            OUT.println("1. Поиск в ширину (BFS)");
-            OUT.println("2. Поиск A-Star");
-
-            try {
-                int searchChoice = scanner.nextInt();
-
-                switch (searchChoice) {
-                    case 1:
-                        this.solver = new BFSSolver();
-                        flag = false;
-                        break;
-                    case 2:
-                        this.solver = new AStarSolver();
-                        flag = false;
-                        break;
-                    default:
-                        OUT.println("Некорректный ввод, попробуйте снова.");
-                }
-            } catch (InputMismatchException e) {
-                OUT.println(INPUT_ERROR_MESSAGE);
-                scanner.next();
-            }
-        }
-    }
-
-    // Метод для поиска пути и его отображения
-    private void findPath() {
-        List<Coordinate> path = this.solver.solve(this.maze, this.start, this.end);
-
-        if (path.isEmpty()) {
-            OUT.println("Путь не найден.");
-        } else {
-            OUT.println("Найденный путь:");
-            OUT.println(render.render(maze, path));
-        }
-    }
 }

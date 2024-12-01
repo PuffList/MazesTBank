@@ -10,27 +10,35 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+/**
+ * Генератор лабиринта с использованием алгоритма Прима.
+ */
 public class PrimGenerator implements Generator {
 
     private static final Random RANDOM = new Random();
 
+    /**
+     * Генерирует лабиринт заданной высоты и ширины.
+     *
+     * @param height высота лабиринта
+     * @param width ширина лабиринта
+     * @return сгенерированный лабиринт
+     */
     @Override
     public Maze generate(int height, int width) {
         Maze maze = new Maze(height, width);
         List<Coordinate> walls = new ArrayList<>();
-        Set<Coordinate> inMaze = new HashSet<>();  // Множество для отслеживания клеток, которые уже в лабиринте
+        Set<Coordinate> inMaze = new HashSet<>();
         int realHeight = height * 2 - 1;
         int realWidth = width * 2 - 1;
-        // Выбор случайной стартовой клетки (только четные клетки могут быть проходами)
         int startRow = (RANDOM.nextInt(realHeight) / 2) * 2;
         int startCol = (RANDOM.nextInt(realWidth) / 2) * 2;
         inMaze.add(new Coordinate(startRow, startCol));
-        addWallsAround(maze, startRow, startCol, walls); // Определяем координаты стен вокруг стартовой клетки
+        addWallsAround(maze, startRow, startCol, walls);
 
         while (!walls.isEmpty()) {
             Coordinate wall = walls.remove(RANDOM.nextInt(walls.size()));
-            List<Coordinate> neighbors = getNeighbors(maze, wall); // Получаем соседние клетки по обе стороны от стены
-            // Устанавливаем флаги
+            List<Coordinate> neighbors = getNeighbors(maze, wall);
             Coordinate insideMaze = null;
             Coordinate outsideMaze = null;
 
@@ -43,8 +51,8 @@ public class PrimGenerator implements Generator {
             }
 
             if (insideMaze != null && outsideMaze != null) {
-                maze.setCell(wall.row(), wall.col(), Cell.Type.PASSAGE);  // Превращаем стену в проход
-                inMaze.add(outsideMaze);  // Добавляем внешний проход в множество, тк он теперь внутренний
+                maze.setCell(wall.row(), wall.col(), Cell.Type.PASSAGE);
+                inMaze.add(outsideMaze);
                 addWallsAround(maze, outsideMaze.row(), outsideMaze.col(), walls);
             }
         }
@@ -55,35 +63,37 @@ public class PrimGenerator implements Generator {
     private void addWallsAround(Maze maze, int row, int col, List<Coordinate> walls) {
 
         if (row > 1 && maze.getCell(row - 1, col).type() == Cell.Type.WALL) {
-            walls.add(new Coordinate(row - 1, col));  // Стена сверху
+            walls.add(new Coordinate(row - 1, col));
         }
 
         if (row < maze.height() - 2 && maze.getCell(row + 1, col).type() == Cell.Type.WALL) {
-            walls.add(new Coordinate(row + 1, col));  // Стена снизу
+            walls.add(new Coordinate(row + 1, col));
         }
 
         if (col > 1 && maze.getCell(row, col - 1).type() == Cell.Type.WALL) {
-            walls.add(new Coordinate(row, col - 1));  // Стена слева
+            walls.add(new Coordinate(row, col - 1));
         }
 
         if (col < maze.width() - 2 && maze.getCell(row, col + 1).type() == Cell.Type.WALL) {
-            walls.add(new Coordinate(row, col + 1));  // Стена справа
+            walls.add(new Coordinate(row, col + 1));
         }
     }
 
     private List<Coordinate> getNeighbors(Maze maze, Coordinate wall) {
         List<Coordinate> neighbors = new ArrayList<>();
 
-        // Проверяем соседей
         if (wall.row() > 0 && maze.getCell(wall.row() - 1, wall.col()).type() == Cell.Type.PASSAGE) {
             neighbors.add(new Coordinate(wall.row() - 1, wall.col()));
         }
+
         if (wall.row() < maze.height() - 1 && maze.getCell(wall.row() + 1, wall.col()).type() == Cell.Type.PASSAGE) {
             neighbors.add(new Coordinate(wall.row() + 1, wall.col()));
         }
+
         if (wall.col() > 0 && maze.getCell(wall.row(), wall.col() - 1).type() == Cell.Type.PASSAGE) {
             neighbors.add(new Coordinate(wall.row(), wall.col() - 1));
         }
+
         if (wall.col() < maze.width() - 1 && maze.getCell(wall.row(), wall.col() + 1).type() == Cell.Type.PASSAGE) {
             neighbors.add(new Coordinate(wall.row(), wall.col() + 1));
         }

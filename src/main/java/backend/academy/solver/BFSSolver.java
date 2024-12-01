@@ -12,28 +12,35 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
+/**
+ * Реализация алгоритма поиска пути с использованием поиска в ширину (BFS).
+ */
+
 public class BFSSolver implements Solver {
 
+    /**
+     * Ищет путь в лабиринте от начальной до конечной точки.
+     *
+     * @param maze лабиринт
+     * @param start начальная точка
+     * @param end конечная точка
+     * @return список координат, представляющих путь
+     */
     @Override
     public List<Coordinate> solve(Maze maze, Coordinate start, Coordinate end) {
 
         Queue<Coordinate> queue = new LinkedList<>();
         queue.add(start);
-        // Словарь для отслеживания, откуда мы пришли в каждую клетку
         Map<Coordinate, Coordinate> cameFrom = new HashMap<>();
-        cameFrom.put(start, null);  // Стартовая точка
-        Set<Coordinate> visited = new HashSet<>(); // Множество для хранения посещённых клеток
+        cameFrom.put(start, null);
+        Set<Coordinate> visited = new HashSet<>();
         visited.add(start);
 
         while (!queue.isEmpty()) {
             Coordinate current = queue.poll();
-
-            // Если достигли конечной точки, восстанавливаем путь
             if (current.equals(end)) {
                 return SolveUtils.reconstructPath(cameFrom, end);
             }
-
-            // Проверяем соседей
             for (Coordinate neighbor : SolveUtils.getNeighbors(maze, current)) {
                 if (!visited.contains(neighbor)) {
                     queue.add(neighbor);
@@ -43,6 +50,6 @@ public class BFSSolver implements Solver {
             }
         }
 
-        return Collections.emptyList(); // Если путь не найден, возвращаем пустой список
+        return Collections.emptyList();
     }
 }

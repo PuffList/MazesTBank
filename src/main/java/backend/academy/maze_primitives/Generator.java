@@ -1,7 +1,8 @@
 package backend.academy.maze_primitives;
 
-/*
-    интерфейс для генерации лабиринтов
+/**
+ * Интерфейс для генераторов лабиринта.
+ * Определяет метод генерации лабиринта.
  */
 public interface Generator {
 

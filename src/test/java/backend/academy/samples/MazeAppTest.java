@@ -1,6 +1,9 @@
 package backend.academy.samples;
 
+import backend.academy.app.CommandSource;
+import backend.academy.app.ConsoleCommandSource;
 import backend.academy.app.MazeApp;
+import backend.academy.render.ConsoleRender;
 import org.junit.jupiter.api.Test;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -14,7 +17,9 @@ public class MazeAppTest {
         String input = "abc\n";
         InputStream in = new ByteArrayInputStream(input.getBytes());
         System.setIn(in);
-        MazeApp app = new MazeApp();
-        assertThrows(NoSuchElementException.class, () -> app.startGame(), "Ожидалось выбрасывание InputMismatchException при некорректном вводе");
+        CommandSource commandSource = new ConsoleCommandSource();
+        MazeApp app = new MazeApp(commandSource, new ConsoleRender());
+        assertThrows(NoSuchElementException.class, app::start,
+            "Ожидалось выбрасывание NoSuchElementException при некорректном вводе");
     }
 }

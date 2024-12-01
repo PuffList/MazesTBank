@@ -2,8 +2,8 @@ package backend.academy.maze_primitives;
 
 import java.util.List;
 
-/*
-    интерфейс для отрисовки лабиринта и найденного пути
+/**
+ * Интерфейс для отрисовки лабиринта и найденного пути.
  */
 public interface Render {
 

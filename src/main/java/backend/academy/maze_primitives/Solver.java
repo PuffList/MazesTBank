@@ -2,8 +2,9 @@ package backend.academy.maze_primitives;
 
 import java.util.List;
 
-/*
-    интерфейс для поиска пути в лабиринте
+/**
+ * Интерфейс для алгоритмов поиска пути в лабиринте.
+ * Определяет метод для нахождения пути.
  */
 public interface Solver {
 

@@ -9,9 +9,19 @@ import java.util.List;
 import java.util.Map;
 import lombok.experimental.UtilityClass;
 
+/**
+ * Утилитный класс для вспомогательных методов, используемых в алгоритмах поиска пути.
+ */
 @UtilityClass
 public class SolveUtils {
 
+    /**
+     * Восстанавливает путь от конечной точки до начальной, используя карту переходов.
+     *
+     * @param cameFrom карта переходов (где ключ — текущая точка, значение — предыдущая точка)
+     * @param end конечная точка
+     * @return список координат, представляющих путь от начальной до конечной точки
+     */
     public static List<Coordinate> reconstructPath(Map<Coordinate, Coordinate> cameFrom, Coordinate end) {
         List<Coordinate> path = new ArrayList<>();
         Coordinate current = end;
@@ -21,10 +31,17 @@ public class SolveUtils {
             current = cameFrom.get(current);
         }
 
-        Collections.reverse(path); // Реверсируем список, чтобы путь шёл от начала к концу
+        Collections.reverse(path);
         return path;
     }
 
+    /**
+     * Получает список соседних клеток, которые являются проходами.
+     *
+     * @param maze лабиринт
+     * @param current текущая клетка
+     * @return список соседних клеток
+     */
     public static List<Coordinate> getNeighbors(Maze maze, Coordinate current) {
         List<Coordinate> neighbors = new ArrayList<>();
         int row = current.row();

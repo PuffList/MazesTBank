@@ -9,19 +9,28 @@ import java.util.Random;
 import java.util.Set;
 import java.util.Stack;
 
+/**
+ * Генератор лабиринта с использованием алгоритма поиска в глубину (DFS).
+ */
 public class DFSGenerator implements Generator {
 
     private static final Random RANDOM = new Random();
-    private static final int STEP_SIZE = 2;  // Константа для размера шага
-    Set<Coordinate> visited = new HashSet<>(); // Множество для отслеживания посещённых клеток
+    private static final int STEP_SIZE = 2;
+    Set<Coordinate> visited = new HashSet<>();
 
+    /**
+     * Генерирует лабиринт заданной высоты и ширины.
+     *
+     * @param height высота лабиринта
+     * @param width ширина лабиринта
+     * @return сгенерированный лабиринт
+     */
     @Override
     public Maze generate(int height, int width) {
         Maze maze = new Maze(height, width);
         Stack<Coordinate> stack = new Stack<>();
         int realHeight = height * 2 - 1;
         int realWidth = width * 2 - 1;
-        // Выбор случайной стартовой клетки (только четные клетки могут быть проходами)
         int startRow = (RANDOM.nextInt(realHeight) / 2) * 2;
         int startCol = (RANDOM.nextInt(realWidth) / 2) * 2;
         stack.add(new Coordinate(startRow, startCol));
@@ -38,16 +47,13 @@ public class DFSGenerator implements Generator {
     private void addNeighborsTostack(Maze maze, Coordinate current, Stack<Coordinate> stack) {
         int row = current.row();
         int col = current.col();
-        // Перемешиваем порядок направлений для случайного выбора
         int[][] directions = {{-STEP_SIZE, 0}, {STEP_SIZE, 0}, {0, -STEP_SIZE}, {0, STEP_SIZE}};
         shuffleArray(directions);
 
-        // Для каждого направления проверяем соседа
         for (int[] direction : directions) {
             int newRow = row + direction[0];
             int newCol = col + direction[1];
             Coordinate neighbor = new Coordinate(newRow, newCol);
-            // Проверяем, что сосед находится в пределах лабиринта
             if (isInBounds(newRow, newCol, maze)) {
                 int wallRow = (row + newRow) / 2;
                 int wallCol = (col + newCol) / 2;
@@ -64,7 +70,6 @@ public class DFSGenerator implements Generator {
         return row >= 0 && row < maze.height() && col >= 0 && col < maze.width();
     }
 
-    // Метод для перемешивания массива направлений
     private void shuffleArray(int[][] array) {
         for (int i = array.length - 1; i > 0; i--) {
             int index = RANDOM.nextInt(i + 1);

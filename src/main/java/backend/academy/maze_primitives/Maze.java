@@ -2,8 +2,9 @@ package backend.academy.maze_primitives;
 
 import lombok.Getter;
 
-/*
-    класс, представляющий лабиринт (состоит из ячеек типа Cell)
+/**
+ * Класс, представляющий лабиринт.
+ * Хранит сетку клеток (стен и проходов).
  */
 public final class Maze {
 
@@ -13,6 +14,12 @@ public final class Maze {
     private final int width;
     private final Cell[][] grid;
 
+    /**
+     * Конструктор класса Maze.
+     *
+     * @param height высота лабиринта
+     * @param width ширина лабиринта
+     */
     public Maze(int height, int width) {
         this.height = height * 2 - 1;
         this.width = width * 2 - 1;
@@ -29,10 +36,24 @@ public final class Maze {
         }
     }
 
+    /**
+     * Возвращает ячейку лабиринта по заданным координатам.
+     *
+     * @param row строка
+     * @param col столбец
+     * @return ячейка лабиринта
+     */
     public Cell getCell(int row, int col) {
         return grid[row][col];
     }
 
+    /**
+     * Устанавливает тип ячейки в лабиринте.
+     *
+     * @param row строка
+     * @param col столбец
+     * @param type тип ячейки
+     */
     public void setCell(int row, int col, Cell.Type type) {
         grid[row][col] = new Cell(row, col, type);
     }
