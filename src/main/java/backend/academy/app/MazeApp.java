@@ -49,12 +49,14 @@ public class MazeApp {
     }
 
     private void chooseGenerationAlgorithm() {
-        while (true) {
+        boolean isChosen = false;
+
+        while (!isChosen) {
             try {
                 int generationChoice = commandSource.getIntInput("Выберите алгоритм генерации (1 - Прима, 2 - DFS):");
                 if (generationChoice == 1 || generationChoice == 2) {
                     game.generator(generationChoice == 1 ? new PrimGenerator() : new DFSGenerator());
-                    return;
+                    isChosen = true;
                 } else {
                     commandSource.showMessageOrMaze(INVALID_CHOICE);
                 }
@@ -65,13 +67,15 @@ public class MazeApp {
     }
 
     private void enterMazeDimensions() {
-        while (true) {
+        boolean validDimensions = false;
+
+        while (!validDimensions) {
             try {
                 int height = commandSource.getIntInput("Введите высоту лабиринта:");
                 int width = commandSource.getIntInput("Введите ширину лабиринта:");
                 if (height > 1 && width > 1) {
                     game.generateMaze(height, width);
-                    return;
+                    validDimensions = true;
                 } else {
                     commandSource.showMessageOrMaze("Размеры лабиринта должны быть больше 1.");
                 }
@@ -82,7 +86,9 @@ public class MazeApp {
     }
 
     private void enterStartAndEndPoints() {
-        while (true) {
+        boolean validPoints = false;
+
+        while (!validPoints) {
             try {
                 int startRow = commandSource.getIntInput("Введите начальную строку:");
                 int startCol = commandSource.getIntInput("Введите начальный столбец:");
@@ -92,7 +98,7 @@ public class MazeApp {
                 Coordinate end = new Coordinate(endRow, endCol);
                 if (isValidCoordinate(start) && isValidCoordinate(end)) {
                     game.setStartAndEnd(start, end);
-                    return;
+                    validPoints = true;
                 } else {
                     commandSource.showMessageOrMaze("Одна или обе из введённых точек некорректны. Попробуйте снова.");
                 }
@@ -103,12 +109,14 @@ public class MazeApp {
     }
 
     private void chooseSolverAlgorithm() {
-        while (true) {
+        boolean isChosen = false;
+
+        while (!isChosen) {
             try {
                 int solverChoice = commandSource.getIntInput("Выберите алгоритм поиска пути (1 - BFS, 2 - A*):");
                 if (solverChoice == 1 || solverChoice == 2) {
                     game.solver(solverChoice == 1 ? new BFSSolver() : new AStarSolver());
-                    return;
+                    isChosen = true;
                 } else {
                     commandSource.showMessageOrMaze(INVALID_CHOICE);
                 }
